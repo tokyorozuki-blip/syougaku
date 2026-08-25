@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>岡山中受ナビ | 操山中・大安寺中等受検対策＆小学生教科学習</title>
+  <meta name="description" content="岡山市を中心とする公立中高一貫校（操山中学校・大安寺中等教育学校）の適性検査対策と小学生教科別学習Webアプリ" />
+
+  <!-- Google Fonts: Noto Sans JP & Plus Jakarta Sans & M PLUS Rounded 1c -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+
+  <!-- React 18 & ReactDOM 18 CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel Standalone for JSX Compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* ----------------------------------------------------
+       岡山中受ナビ - デザインシステム & レスポンシブCSS
+       ---------------------------------------------------- */
+    :root {
+      --font-main: 'M PLUS Rounded 1c', 'Noto Sans JP', sans-serif;
+      --font-number: 'Plus Jakarta Sans', var(--font-main);
+
+      /* カラー定義 */
+      --color-blue: #2563eb;
+      --color-teal: #0d9488;
+      
+      /* 受講者カラー */
+      --color-minato: #ec4899;
+      --bg-minato: #fdf2f8;
+      
+      --color-yuzu: #8b5cf6;
+      --bg-yuzu: #f3e8ff;
+
+      --color-accent: #f59e0b;
+      --bg-accent: #fef3c7;
+
+      /* アクティブテーマ (デフォルト：ブルー) */
+      --primary: var(--color-blue);
+      --primary-bg: #eff6ff;
+      --primary-border: rgba(37, 99, 235, 0.2);
+
+      --color-text-main: #1e293b;
+      --color-text-sub: #64748b;
+      --color-success: #10b981;
+      --color-danger: #ef4444;
+
+      /* 角丸ルールの徹底 */
+      --radius-card: 20px;
+      --radius-large-card: 28px;
+      --radius-btn: 16px;
+
+      /* ガラスマフィズムとシャドウ */
+      --glass-bg: rgba(255, 255, 255, 0.88);
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --shadow-glass: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
+      --shadow-hover: 0 16px 36px -4px rgba(0, 0, 0, 0.09), 0 6px 16px rgba(0, 0, 0, 0.04);
+
+      /* タッチ操作 & iOS セーフエリア */
+      --min-tap: 48px;
+      --safe-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    }
+
+    /* テーマ切り替え用CSSクラス */
+    body.theme-minato {
+      --primary: var(--color-minato);
+      --primary-bg: var(--bg-minato);
+      --primary-border: rgba(236, 72, 153, 0.25);
+    }
+    body.theme-yuzu {
+      --primary: var(--color-yuzu);
+      --primary-bg: var(--bg-yuzu);
+      --primary-border: rgba(139, 92, 246, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: var(--font-main);
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background-attachment: fixed;
+      color: var(--color-text-main);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    /* ルビ表示スタイル */
+    ruby {
+      ruby-position: over;
+    }
+    rt {
+      font-size: 0.65em;
+      font-weight: 800;
+      user-select: none;
+    }
+    body.theme-minato rt { color: var(--color-minato); }
+    body.theme-yuzu rt { color: var(--color-blue); }
+
+    /* レイアウト構造 */
+    .app-viewport {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: calc(var(--safe-bottom) + 90px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    /* カード・ボタン共通スタイル */
+    .card-std {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-card);
+      border: 1.5px solid var(--glass-border);
+      box-shadow: var(--shadow-glass);
+      padding: 20px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card-large {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-large-card);
+      border: 1.5px solid var(--glass-border);
+      box-shadow: var(--shadow-glass);
+      padding: 26px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card-hoverable:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .btn {
+      min-height: var(--min-tap);
+      min-width: var(--min-tap);
+      padding: 12px 22px;
+      border-radius: var(--radius-btn);
+      border: none;
+      font-family: var(--font-main);
+      font-weight: 800;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--color-text-main);
+      border: 1.5px solid rgba(0, 0, 0, 0.1);
+    }
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* アニメーションキーフレーム */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popCorrect {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    /* エラーバウンダリ表示 */
+    .error-fallback-container {
+      max-width: 500px;
+      margin: 60px auto;
+      padding: 32px;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ナビゲーションヘッダー */
+    .main-header {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-bottom: 3px solid var(--primary-border);
+    }
+    .header-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      background: var(--primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .brand-title {
+      font-size: 1.45rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--color-text-sub);
+      font-weight: 700;
+      display: block;
+    }
+
+    .nav-menu-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .nav-menu-item {
+      min-height: 44px;
+      padding: 8px 16px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(0, 0, 0, 0.08);
+      background: #ffffff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .nav-menu-item.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* レスポンシブメディアクエリ */
+    @media (max-width: 640px) {
+      .app-viewport { padding: 12px; }
+      .card-large { padding: 18px; border-radius: 22px; }
+      .card-std { padding: 14px; border-radius: 18px; }
+    }
+  </style>
+</head>
+<body className="theme-blue">
+  <div id="root"></div>
+
+  <!-- React 18 内部スクリプト (Babel トランスパイル) -->
+  <script type="text/babel">
+    const { useState, useEffect, Component } = React;
+
+    // ----------------------------------------------------
+    // 安全な LocalStorage アクセスユーティリティ (堅牢性確保)
+    // ----------------------------------------------------
+    const STORAGE_KEY = 'okayama_chuju_navi_v2';
+
+    const defaultInitialState = {
+      activeProfileId: 'minato', // minato or yuzu
+      activeGrade: '1',
+      activeTab: 'home',
+      showFurigana: true,
+      parentPin: '0410',
+      parentMessage: '今日も一歩ずつがんばろう！できたことを大切にしよう😊',
+      parentRewardName: 'お菓子・図書カード',
+      
+      // 受講者別独立データ
+      students: {
+        minato: {
+          id: 'minato',
+          name: 'みなとちゃん',
+          gradeStr: '小学1年生',
+          gradeNum: 1,
+          avatar: '👧',
+          level: 1,
+          exp: 0,
+          step: 1,
+          wallet: 0, // 現在の貯金額 (円)
+          totalEarned: 0,
+          unusedTickets: 0,
+          usedTickets: 0,
+          badges: ['はじめの一歩'],
+          completedWeeks: [1],
+          seasonalCompleted: { summer: false, winter: false, spring: false }
+        },
+        yuzu: {
+          id: 'yuzu',
+          name: 'ゆずちゃん',
+          gradeStr: '小学4年生',
+          gradeNum: 4,
+          avatar: '👧',
+          level: 1,
+          exp: 0,
+          step: 1,
+          wallet: 0,
+          totalEarned: 0,
+          unusedTickets: 0,
+          usedTickets: 0,
+          badges: ['はじめの一歩', '操山・大安寺チャレンジャー'],
+          completedWeeks: [1],
+          seasonalCompleted: { summer: false, winter: false, spring: false }
+        }
+      },
+      // 学習演習履歴
+      history: [],
+      // オリジナルカスタマイズ問題集
+      customQuestions: []
+    };
+
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultInitialState;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return defaultInitialState;
+        
+        // 最低限のプロパティ保護
+        return {
+          ...defaultInitialState,
+          ...parsed,
+          students: {
+            minato: { ...defaultInitialState.students.minato, ...(parsed.students?.minato || {}) },
+            yuzu: { ...defaultInitialState.students.yuzu, ...(parsed.students?.yuzu || {}) }
+          }
+        };
+      } catch (err) {
+        console.warn('LocalStorage load error, returning initial defaults:', err);
+        return defaultInitialState;
+      }
+    }
+
+    function saveStateToStorage(state) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        console.error('LocalStorage save error:', err);
+      }
+    }
+
+    // 全角数字 -> 半角数字 変換関数
+    function normalizeNumber(str) {
+      if (typeof str !== 'string') return str;
+      return str.replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xfee0))
+                .replace(/．/g, '.')
+                .trim();
+    }
+
+    // ----------------------------------------------------
+    // React ErrorBoundary (万が一のエラー時も白画面を防止)
+    // ----------------------------------------------------
+    class ErrorBoundary extends Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, errorInfo: null };
+      }
+
+      static getDerivedStateFromError(error) {
+        return { hasError: true };
+      }
+
+      componentDidCatch(error, errorInfo) {
+        console.error('ErrorBoundary caught an error:', error, errorInfo);
+      }
+
+      handleReset = () => {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+        window.location.reload();
+      };
+
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div className="error-fallback-container">
+              <h2 style={{ color: 'var(--color-danger)', fontSize: '1.4rem' }}>⚠️ 予期しない問題が発生しました</h2>
+              <p style={{ color: 'var(--color-text-sub)', fontSize: '0.95rem' }}>
+                画面描画を復旧させるため、安全にデータを初期化して再起動します。
+              </p>
+              <button className="btn btn-primary" onClick={this.handleReset} style={{ margin: '10px auto' }}>
+                🔄 キャッシュをクリアして再起動
+              </button>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
+
+    // ----------------------------------------------------
+    // FuriganaText コンポーネント (ひらがなルビ自動表示)
+    // ----------------------------------------------------
+    const FuriganaText = ({ text, showFurigana = true, isMinato = true }) => {
+      if (!text) return null;
+      if (!showFurigana) {
+        // ルビタグ除去
+        const clean = text.replace(/<ruby>(.*?)<rt>.*?<\/rt><\/ruby>/g, '$1');
+        return <span>{clean}</span>;
+      }
+      return <span dangerouslySetInnerHTML={{ __html: text }} />;
+    };
+
+    // ----------------------------------------------------
+    // DiagramViewer コンポーネント (12種類のSVG動的図形表示)
+    // ----------------------------------------------------
+    const DiagramViewer = ({ type }) => {
+      if (!type) return null;
+
+      const diagrams = {
+        origami: (
+          <svg viewBox="0 0 200 150" width="100%" height="140">
+            <rect x="30" y="20" width="100" height="100" fill="#fbcfe8" stroke="#ec4899" strokeWidth="3" />
+            <polygon points="80,20 180,20 130,120" fill="rgba(236,72,153,0.4)" stroke="#ec4899" strokeWidth="2" />
+            <text x="75" y="75" fontSize="12" fontWeight="bold" fill="#831843">重なり部分</text>
+          </svg>
+        ),
+        cube_cut: (
+          <svg viewBox="0 0 200 160" width="100%" height="140">
+            <polygon points="60,40 120,20 160,50 100,70" fill="#e2e8f0" stroke="#475569" strokeWidth="2" />
+            <polygon points="60,40 100,70 100,130 60,100" fill="#cbd5e1" stroke="#475569" strokeWidth="2" />
+            <polygon points="100,70 160,50 160,110 100,130" fill="#94a3b8" stroke="#475569" strokeWidth="2" />
+            <polygon points="60,70 120,20 160,80 100,130" fill="#fef08a" opacity="0.8" stroke="#ca8a04" strokeWidth="3" />
+            <text x="90" y="75" fontSize="12" fontWeight="bold" fill="#854d0e">切断面</text>
+          </svg>
+        ),
+        l_shape: (
+          <svg viewBox="0 0 200 150" width="100%" height="140">
+            <polygon points="30,20 120,20 120,60 70,60 70,120 30,120" fill="#bae6fd" stroke="#0284c7" strokeWidth="3" />
+            <text x="40" y="45" fontSize="12" fill="#0369a1">A (4cm)</text>
+            <text x="80" y="40" fontSize="12" fill="#0369a1">6cm</text>
+            <text x="35" y="90" fontSize="12" fill="#0369a1">8cm</text>
+          </svg>
+        ),
+        go_stones: (
+          <svg viewBox="0 0 200 120" width="100%" height="110">
+            {[20, 50, 80, 110, 140, 170].map((x, i) => (
+              <circle key={i} cx={x} cy="30" r="10" fill="#334155" />
+            ))}
+            {[20, 50, 80, 110, 140, 170].map((x, i) => (
+              <circle key={i} cx={x} cy="70" r="10" fill={i % 2 === 0 ? "#334155" : "#ffffff"} stroke="#334155" strokeWidth="2" />
+            ))}
+          </svg>
+        ),
+        graph_speed: (
+          <svg viewBox="0 0 200 140" width="100%" height="130">
+            <line x1="30" y1="110" x2="180" y2="110" stroke="#475569" strokeWidth="2" />
+            <line x1="30" y1="110" x2="30" y2="20" stroke="#475569" strokeWidth="2" />
+            <polyline points="30,110 80,60 130,60 180,20" fill="none" stroke="#2563eb" strokeWidth="3" />
+            <text x="170" y="125" fontSize="10">時間(分)</text>
+            <text x="10" y="20" fontSize="10">道のり(m)</text>
+          </svg>
+        ),
+        triangle_angles: (
+          <svg viewBox="0 0 200 130" width="100%" height="120">
+            <polygon points="30,100 150,100 30,30" fill="#ddd6fe" stroke="#7c3aed" strokeWidth="3" />
+            <path d="M 30,80 A 20,20 0 0,0 50,100" fill="none" stroke="#7c3aed" strokeWidth="2" />
+            <text x="40" y="95" fontSize="12" fontWeight="bold" fill="#5b21b6">90°</text>
+            <text x="120" y="95" fontSize="12" fill="#5b21b6">30°</text>
+            <text x="38" y="45" fontSize="12" fill="#5b21b6">60°</text>
+          </svg>
+        ),
+        apples: (
+          <svg viewBox="0 0 200 100" width="100%" height="90">
+            {['🍎','🍎','🍎','🍎','🍎','🍎'].map((a, i) => (
+              <text key={i} x={20 + i * 28} y="50" fontSize="24">{a}</text>
+            ))}
+          </svg>
+        ),
+        clock: (
+          <svg viewBox="0 0 150 150" width="100%" height="130">
+            <circle cx="75" cy="75" r="55" fill="#ffffff" stroke="#1e293b" strokeWidth="4" />
+            <line x1="75" y1="75" x2="75" y2="35" stroke="#1e293b" strokeWidth="4" strokeLinecap="round" />
+            <line x1="75" y1="75" x2="105" y2="75" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
+            <text x="70" y="32" fontSize="12" fontWeight="bold">12</text>
+            <text x="118" y="80" fontSize="12" fontWeight="bold">3</text>
+            <text x="71" y="124" fontSize="12" fontWeight="bold">6</text>
+            <text x="25" y="80" fontSize="12" fontWeight="bold">9</text>
+          </svg>
+        ),
+        balance: (
+          <svg viewBox="0 0 200 130" width="100%" height="120">
+            <polygon points="100,70 90,110 110,110" fill="#64748b" />
+            <line x1="30" y1="70" x2="170" y2="70" stroke="#334155" strokeWidth="4" />
+            <circle cx="50" cy="55" r="14" fill="#f59e0b" />
+            <circle cx="150" cy="55" r="14" fill="#f59e0b" />
+            <circle cx="130" cy="55" r="14" fill="#f59e0b" />
+          </svg>
+        ),
+        circuit: (
+          <svg viewBox="0 0 200 130" width="100%" height="120">
+            <rect x="40" y="30" width="120" height="70" fill="none" stroke="#334155" strokeWidth="3" />
+            <circle cx="100" cy="30" r="12" fill="#fef08a" stroke="#ca8a04" strokeWidth="2" />
+            <text x="96" y="34" fontSize="14">💡</text>
+            <rect x="85" y="94" width="30" height="12" fill="#0d9488" />
+            <text x="90" y="104" fontSize="10" fill="#ffffff" fontWeight="bold">🔋</text>
+          </svg>
+        ),
+        bar_chart: (
+          <svg viewBox="0 0 200 140" width="100%" height="130">
+            <line x1="30" y1="110" x2="180" y2="110" stroke="#475569" strokeWidth="2" />
+            <rect x="45" y="50" width="22" height="60" fill="#3b82f6" />
+            <rect x="85" y="30" width="22" height="80" fill="#10b981" />
+            <rect x="125" y="70" width="22" height="40" fill="#f59e0b" />
+            <text x="45" y="125" fontSize="10">操山中</text>
+            <text x="85" y="125" fontSize="10">大安寺</text>
+            <text x="125" y="125" fontSize="10">全国</text>
+          </svg>
+        ),
+        number_line: (
+          <svg viewBox="0 0 220 70" width="100%" height="60">
+            <line x1="20" y1="30" x2="200" y2="30" stroke="#1e293b" strokeWidth="3" />
+            {[20, 60, 100, 140, 180, 200].map((x, idx) => (
+              <g key={idx}>
+                <line x1={x} y1="24" x2={x} y2="36" stroke="#1e293b" strokeWidth="2" />
+                <text x={x - 4} y="52" fontSize="12" fontWeight="bold">{idx * 2}</text>
+              </g>
+            ))}
+          </svg>
+        )
+      };
+
+      return <div className="diagram-card" style={{ background: '#ffffff', padding: '10px', borderRadius: '16px', border: '1px solid #e2e8f0', margin: '12px 0' }}>{diagrams[type] || null}</div>;
+    };
+
+    // ----------------------------------------------------
+    // サンプル学習問題データ (全教科・適性検査・筆算対応)
+    // ----------------------------------------------------
+    const SAMPLE_QUESTIONS = [
+      {
+        id: 'q_m1',
+        subject: 'math',
+        grade: '1',
+        title: 'かずの たしざん',
+        rubiedTitle: '<ruby>数<rt>かず</rt></ruby>の たしざん',
+        question: 'みかんが 4こ あります。おかあさんから 3こ もらいました。あわせて なんこ かな？',
+        rubiedQuestion: 'みかんが 4こ あります。おかあさんから 3こ もらいました。あわせて なんこ かな？ 🍊🍊🍊🍊 + 🍊🍊🍊',
+        type: 'choice',
+        options: ['5こ', '6こ', '7こ', '8こ'],
+        correctAnswer: '7こ',
+        explanation: '4 + 3 = 7（ななこ）だね！ 4から 順番に 5, 6, 7 と かぞえても いいよ！',
+        diagram: 'apples'
+      },
+      {
+        id: 'q_m4_hissan',
+        subject: 'math',
+        grade: '4',
+        title: '3けたの筆算（足し算）',
+        rubiedTitle: '3けたの<ruby>筆算<rt>ひっさん</rt></ruby>',
+        question: '次の筆算を計算して、答えを半角または全角数字で入力しましょう。\n   448\n + 375\n-------',
+        type: 'numeric',
+        correctAnswer: '823',
+        explanation: '一の位: 8+5=13（1くり上がり）。十の位: 4+7+1=12（1くり上がり）。百の位: 4+3+1=8。答えは 823 です！',
+        diagram: 'number_line'
+      },
+      {
+        id: 'q_j1',
+        subject: 'japanese',
+        grade: '1',
+        title: 'ひらがな・ことばあわせ',
+        rubiedTitle: 'ひらがな・ことばあわせ',
+        question: '「おかやま」の 「お」で はじまる かわいい 動物（どうぶつ）は どれかな？',
+        rubiedQuestion: '「おかやま」の 「お」で はじまる どうぶつは どれかな？ 🐶',
+        type: 'choice',
+        options: ['オオカミ 🐺', 'うさぎ 🐰', 'きつね 🦊', 'たぬき 🍃'],
+        correctAnswer: 'オオカミ 🐺',
+        explanation: '「オオカミ」は 「お」で はじまるね！'
+      },
+      {
+        id: 'q_j4',
+        subject: 'japanese',
+        grade: '4',
+        title: '4年生の漢字と同音異義語',
+        rubiedTitle: '4年生の<ruby>漢字<rt>かんじ</rt></ruby>',
+        question: '「岡山県立操山中学校の校舎が（　　）した。」カッコに入る正しい漢字を選びましょう。',
+        type: 'choice',
+        options: ['完成', '感性', '歓声', '閑静'],
+        correctAnswer: '完成',
+        explanation: '建物やりっぱな計画がしっかり出来上がることを「完成（かんせい）」と書きます！'
+      },
+      {
+        id: 'q_sci',
+        subject: 'science',
+        grade: '4',
+        title: '乾電池と豆電球の回路（理科）',
+        rubiedTitle: '<ruby>乾電池<rt>かんでんち</rt></ruby>と<ruby>豆電球<rt>まめでんきゅう</rt></ruby>',
+        question: '乾電池2個と豆電球をつなぐとき、豆電球が一番明るく光るつなぎ方はどれですか？',
+        type: 'choice',
+        options: ['直列（ちょくれつ）つなぎ', '並列（へいれつ）つなぎ', '1個だけ反対向き', 'どれも同じ'],
+        correctAnswer: '直列（ちょくれつ）つなぎ',
+        explanation: '乾電池を直列につなぐと電圧が強くなり、豆電球が最も明るく輝きます！',
+        diagram: 'circuit'
+      },
+      {
+        id: 'q_soc',
+        subject: 'social',
+        grade: '4',
+        title: '岡山の川と地理（社会）',
+        rubiedTitle: '岡山の<ruby>川<rt>かわ</rt></ruby>と<ruby>地理<rt>ちり</rt></ruby>',
+        question: '岡山市内を流れ、児島湾へと注ぐ大きな川の名前は何でしょう？',
+        type: 'choice',
+        options: ['旭川（あさひがわ）', '信濃川（しなのがわ）', '利根川（とねがわ）', '淀川（よどがわ）'],
+        correctAnswer: '旭川（あさひがわ）',
+        explanation: '岡山市の中心を流れる代表的な川は「旭川（あさひがわ）」と「吉井川（よしいがわ）」です！'
+      },
+      {
+        id: 'q_apt1',
+        subject: 'aptitude',
+        grade: '4',
+        title: '【操山中・大安寺中等】グラフと降水量の考察',
+        rubiedTitle: '【<ruby>操山<rt>みさおやま</rt></ruby>・<ruby>大安寺<rt>だいあんじ</rt></ruby>】<ruby>資料<rt>しりょう</rt></ruby><ruby>考察<rt>こうさつ</rt></ruby>',
+        question: '岡山市の年間降水量は約1100mmで全国平均より少ないです。この気候の特徴が、岡山の白桃やマスカットづくりに適している理由を記述してみよう！',
+        type: 'essay',
+        correctAnswer: '晴れの日（日照時間）が多く太陽の光をたっぷり浴びて甘く育つから。',
+        explanation: '「降水量が少なく晴れの日が多いこと」と「太陽の光を多く浴びて糖度が高くなること」を結びつけて説明できれば満点です！',
+        diagram: 'bar_chart'
+      }
+    ];
+
+    // ----------------------------------------------------
+    // Main App React Component
+    // ----------------------------------------------------
+    function OkayamaChujuApp() {
+      const [appState, setAppState] = useState(loadSavedState);
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+      const [parentPinInput, setParentPinInput] = useState('');
+      const [parentUnlocked, setParentUnlocked] = useState(false);
+      const [quizActive, setQuizActive] = useState(false);
+      const [activeQuizQuestions, setActiveQuizQuestions] = useState([]);
+      const [currentQIndex, setCurrentQIndex] = useState(0);
+      const [userAnswerInput, setUserAnswerInput] = useState('');
+      const [selectedChoice, setSelectedChoice] = useState(null);
+      const [showHint, setShowHint] = useState(false);
+      const [quizSubmitted, setQuizSubmitted] = useState(false);
+      const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+      const [quizResult, setQuizResult] = useState(null);
+      const [seasonalTab, setSeasonalTab] = useState('summer');
+
+      // State 自動保存
+      useEffect(() => {
+        saveStateToStorage(appState);
+      }, [appState]);
+
+      const activeProfile = appState.students[appState.activeProfileId];
+      const isMinato = appState.activeProfileId === 'minato';
+
+      // テーマクラス適用
+      useEffect(() => {
+        document.body.className = isMinato ? 'theme-minato' : 'theme-yuzu';
+      }, [isMinato]);
+
+      // プロフィール切替
+      const handleSwitchProfile = (profId) => {
+        setAppState(prev => ({
+          ...prev,
+          activeProfileId: profId,
+          activeGrade: profId === 'minato' ? '1' : '4',
+          showFurigana: profId === 'minato' ? true : prev.showFurigana
+        }));
+      };
+
+      // 星・お小遣い・経験値獲得
+      const rewardStudent = (amountEarned, expGained = 20) => {
+        setAppState(prev => {
+          const currentStud = prev.students[prev.activeProfileId];
+          const newWallet = currentStud.wallet + amountEarned;
+          const newTotalEarned = currentStud.totalEarned + amountEarned;
+          const newExp = currentStud.exp + expGained;
+          const newLevel = Math.floor(newExp / 100) + 1;
+          const newStep = Math.min(50, currentStud.step + Math.floor(expGained / 20));
+
+          // 100円到達でチケット発行
+          let newUnusedTickets = currentStud.unusedTickets;
+          if (Math.floor(newWallet / 100) > Math.floor(currentStud.wallet / 100)) {
+            newUnusedTickets += 1;
+          }
+
+          return {
+            ...prev,
+            students: {
+              ...prev.students,
+              [prev.activeProfileId]: {
+                ...currentStud,
+                wallet: newWallet,
+                totalEarned: newTotalEarned,
+                exp: newExp,
+                level: newLevel,
+                step: newStep,
+                unusedTickets: newUnusedTickets
+              }
+            }
+          };
+        });
+      };
+
+      // ドリル開始
+      const startDrillCategory = (subjectFilter) => {
+        let filtered = SAMPLE_QUESTIONS.filter(q => {
+          if (subjectFilter === 'all') return true;
+          if (subjectFilter === 'aptitude') return q.subject === 'aptitude';
+          return q.subject === subjectFilter;
+        });
+
+        if (appState.customQuestions && appState.customQuestions.length > 0) {
+          const customFiltered = appState.customQuestions.filter(q => subjectFilter === 'all' || q.subject === subjectFilter);
+          filtered = [...filtered, ...customFiltered];
+        }
+
+        if (filtered.length === 0) filtered = SAMPLE_QUESTIONS;
+
+        setActiveQuizQuestions(filtered);
+        setCurrentQIndex(0);
+        setUserAnswerInput('');
+        setSelectedChoice(null);
+        setShowHint(false);
+        setQuizSubmitted(false);
+        setIsAnswerCorrect(false);
+        setQuizResult(null);
+        setQuizActive(true);
+      };
+
+      // クイズ回答チェック
+      const handleCheckAnswer = () => {
+        if (quizSubmitted) return;
+
+        const currentQ = activeQuizQuestions[currentQIndex];
+        let correct = false;
+
+        if (currentQ.type === 'choice') {
+          correct = selectedChoice === currentQ.correctAnswer;
+        } else if (currentQ.type === 'numeric') {
+          const normInput = normalizeNumber(userAnswerInput);
+          const normCorrect = normalizeNumber(currentQ.correctAnswer);
+          correct = normInput === normCorrect;
+        } else if (currentQ.type === 'essay') {
+          correct = userAnswerInput.trim().length >= 5; // 記述形式は意欲記述でクリア
+        }
+
+        setQuizSubmitted(true);
+        setIsAnswerCorrect(correct);
+
+        if (correct) {
+          rewardStudent(10, 25); // 1問正解で10円＆25EXP
+        }
+      };
+
+      // 次の問題へ
+      const handleNextQuestion = () => {
+        if (currentQIndex < activeQuizQuestions.length - 1) {
+          setCurrentQIndex(prev => prev + 1);
+          setUserAnswerInput('');
+          setSelectedChoice(null);
+          setShowHint(false);
+          setQuizSubmitted(false);
+          setIsAnswerCorrect(false);
+        } else {
+          // クイズ完了
+          if (window.confetti) {
+            window.confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+          }
+
+          const earned = activeQuizQuestions.length * 10;
+          setQuizResult({
+            total: activeQuizQuestions.length,
+            earned: earned
+          });
+        }
+      };
+
+      // 保護者エリア認証
+      const handleUnlockParent = (e) => {
+        e.preventDefault();
+        if (parentPinInput === appState.parentPin) {
+          setParentUnlocked(true);
+        } else {
+          alert('暗証番号が異なります（初期番号：0410）');
+        }
+      };
+
+      return (
+        <div className="app-viewport">
+          {/* 1. ヘッダーナビゲーション */}
+          <header className="card-large main-header">
+            <div className="header-top-row">
+              <div className="app-brand">
+                <div className="brand-icon">🎒</div>
+                <div>
+                  <h1 className="brand-title">岡山中受ナビ</h1>
+                  <span className="brand-sub">操山中・大安寺中等受検 ＆ 小学生教科学習</span>
+                </div>
+              </div>
+
+              {/* 受講者切替ボタン */}
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  className={`btn ${appState.activeProfileId === 'minato' ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => handleSwitchProfile('minato')}
+                  style={{ borderRadius: '999px', padding: '6px 16px' }}
+                >
+                  👧 みなとちゃん（小1）
+                </button>
+                <button
+                  className={`btn ${appState.activeProfileId === 'yuzu' ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => handleSwitchProfile('yuzu')}
+                  style={{ borderRadius: '999px', padding: '6px 16px' }}
+                >
+                  👧 ゆずちゃん（小4）
+                </button>
+              </div>
+            </div>
+
+            {/* ナビゲーションメニュー */}
+            <div className="nav-menu-bar">
+              {[
+                { id: 'home', label: '🏠 ホーム' },
+                { id: 'advance', label: '🚀 先取り' },
+                { id: 'math', label: '📐 算数・筆算' },
+                { id: 'kanji', label: '✏️ 漢字・国語' },
+                { id: 'progress', label: '📊 進捗・お財布' },
+                { id: 'guide', label: '📖 志望校ガイド' },
+                { id: 'parent', label: '🔒 保護者エリア' }
+              ].map(m => (
+                <button
+                  key={m.id}
+                  className={`nav-menu-item ${appState.activeTab === m.id ? 'active' : ''}`}
+                  onClick={() => { setAppState(prev => ({ ...prev, activeTab: m.id })); setQuizActive(false); }}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </header>
+
+          {/* クイズ進行中の画面 */}
+          {quizActive ? (
+            <div className="card-large" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {!quizResult ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="badge" style={{ background: 'var(--primary-bg)', color: 'var(--primary)' }}>
+                      問題 {currentQIndex + 1} / {activeQuizQuestions.length}
+                    </span>
+                    <button className="btn btn-secondary" onClick={() => setQuizActive(false)}>演習をやめる</button>
+                  </div>
+
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '900' }}>
+                    <FuriganaText text={activeQuizQuestions[currentQIndex]?.rubiedTitle || activeQuizQuestions[currentQIndex]?.title} showFurigana={appState.showFurigana} />
+                  </h3>
+
+                  <div style={{ background: '#ffffff', padding: '16px', borderRadius: '18px', border: '1.5px solid #e2e8f0' }}>
+                    <FuriganaText text={activeQuizQuestions[currentQIndex]?.rubiedQuestion || activeQuizQuestions[currentQIndex]?.question} showFurigana={appState.showFurigana} />
+                    <DiagramViewer type={activeQuizQuestions[currentQIndex]?.diagram} />
+                  </div>
+
+                  {/* 選択問題 */}
+                  {activeQuizQuestions[currentQIndex]?.type === 'choice' && (
+                    <div style={{ display: 'grid', gap: '10px' }}>
+                      {activeQuizQuestions[currentQIndex].options.map((opt, idx) => (
+                        <button
+                          key={idx}
+                          className={`btn ${selectedChoice === opt ? 'btn-primary' : 'btn-secondary'}`}
+                          onClick={() => setSelectedChoice(opt)}
+                          disabled={quizSubmitted}
+                          style={{ justifyContent: 'flex-start', textAlign: 'left' }}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* 数値問題（全角・半角変換対応） */}
+                  {activeQuizQuestions[currentQIndex]?.type === 'numeric' && (
+                    <div>
+                      <label style={{ fontSize: '0.9rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                        答えの数字を入力（全角数字でもOKです）:
+                      </label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        className="card-std"
+                        style={{ width: '100%', fontSize: '1.4rem', fontWeight: '900', textAlign: 'center' }}
+                        value={userAnswerInput}
+                        onChange={(e) => setUserAnswerInput(e.target.value)}
+                        placeholder="例: 823 または ８２３"
+                        disabled={quizSubmitted}
+                      />
+                    </div>
+                  )}
+
+                  {/* 記述問題 */}
+                  {activeQuizQuestions[currentQIndex]?.type === 'essay' && (
+                    <div>
+                      <textarea
+                        className="card-std"
+                        style={{ width: '100%', height: '100px', fontSize: '1rem' }}
+                        value={userAnswerInput}
+                        onChange={(e) => setUserAnswerInput(e.target.value)}
+                        placeholder="理由や自分の考えを書いてみよう！"
+                        disabled={quizSubmitted}
+                      />
+                    </div>
+                  )}
+
+                  {/* 解答確定・判定 */}
+                  {!quizSubmitted ? (
+                    <button className="btn btn-primary" onClick={handleCheckAnswer} style={{ marginTop: '10px' }}>
+                      答え合わせする
+                    </button>
+                  ) : (
+                    <div style={{ background: isAnswerCorrect ? '#e6fffa' : '#fff5f5', padding: '16px', borderRadius: '16px', border: `2px solid ${isAnswerCorrect ? '#10b981' : '#ef4444'}` }}>
+                      <h4 style={{ color: isAnswerCorrect ? '#047857' : '#b91c1c', fontSize: '1.2rem' }}>
+                        {isAnswerCorrect ? '🎉 大正解！ (+10円＆25EXP獲得)' : '惜しい！ 解答を確認しよう'}
+                      </h4>
+                      <p style={{ marginTop: '6px', fontWeight: 'bold' }}>
+                        【解説】{activeQuizQuestions[currentQIndex]?.explanation}
+                      </p>
+                      <button className="btn btn-primary" onClick={handleNextQuestion} style={{ marginTop: '12px' }}>
+                        {currentQIndex < activeQuizQuestions.length - 1 ? '次の問題へ ➔' : '結果を見る 🏆'}
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* クイズ結果画面 */
+                <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h2 style={{ fontSize: '1.8rem', color: 'var(--primary)' }}>🏆 おめでとう！演習完了！</h2>
+                  <p style={{ fontSize: '1.2rem', fontWeight: '800' }}>
+                    獲得したお小遣い: <span style={{ color: 'var(--color-accent)', fontSize: '1.6rem' }}>+{quizResult.earned}円</span>
+                  </p>
+                  <p style={{ color: 'var(--color-text-sub)' }}>今日も一歩前進！よくがんばりました😊</p>
+                  <button className="btn btn-primary" onClick={() => setQuizActive(false)} style={{ margin: '0 auto' }}>
+                    ホームへ戻る
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* タブ切替メイン画面 */
+            <>
+              {/* ホームタブ */}
+              {appState.activeTab === 'home' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  {/* 2. 受講者プロフィール ＆ 保護者メッセージ */}
+                  <div className="card-large" style={{ borderLeft: '6px solid var(--primary)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                      <div style={{ fontSize: '3.5rem' }}>{activeProfile.avatar}</div>
+                      <div>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: '900' }}>{activeProfile.name} の学習部屋</h2>
+                        <span className="badge" style={{ background: 'var(--primary)', color: '#ffffff' }}>
+                          {activeProfile.gradeStr}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: '16px', background: '#ffffff', padding: '14px', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+                      <strong style={{ color: 'var(--primary)' }}>💬 保護者からの応援メッセージ:</strong>
+                      <p style={{ marginTop: '4px', fontWeight: '700' }}>{appState.parentMessage}</p>
+                    </div>
+                  </div>
+
+                  {/* 3. 学習目標ヒーローカード */}
+                  <div className="card-large" style={{ background: 'linear-gradient(135deg, #ffffff 0%, var(--primary-bg) 100%)' }}>
+                    <h3 style={{ fontSize: '1.3rem', color: 'var(--primary)', fontWeight: '900' }}>🎯 今日の学習目標</h3>
+                    <p style={{ marginTop: '6px', fontWeight: '700' }}>
+                      {isMinato ? '【小1基礎】ひらがなルビ付き問題で、楽しく足し算とことばを学ぼう！' : '【小4先取り＆適性検査】筆算と操山中・大安寺中等の思考力ドリルに挑戦しよう！'}
+                    </p>
+                  </div>
+
+                  {/* 4. 学習コース選択 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                    <div className="card-large card-hoverable" style={{ borderTop: '5px solid var(--color-minato)', cursor: 'pointer' }} onClick={() => { handleSwitchProfile('minato'); startDrillCategory('all'); }}>
+                      <h3 style={{ fontSize: '1.3rem', color: 'var(--color-minato)' }}>🌸 みなとちゃんの部屋</h3>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--color-text-sub)', marginTop: '4px' }}>小学1年生向け・ひらがなルビ・基礎計算・楽しく学べるドリル</p>
+                      <button className="btn btn-primary" style={{ background: 'var(--color-minato)', marginTop: '14px' }}>ドリルをはじめる ➔</button>
+                    </div>
+
+                    <div className="card-large card-hoverable" style={{ borderTop: '5px solid var(--color-yuzu)', cursor: 'pointer' }} onClick={() => { handleSwitchProfile('yuzu'); startDrillCategory('all'); }}>
+                      <h3 style={{ fontSize: '1.3rem', color: 'var(--color-yuzu)' }}>💜 ゆずちゃんの部屋</h3>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--color-text-sub)', marginTop: '4px' }}>小学4年生向け・小4先取り・筆算・思考力問題・適性検査準備</p>
+                      <button className="btn btn-primary" style={{ background: 'var(--color-yuzu)', marginTop: '14px' }}>特訓を開始する ➔</button>
+                    </div>
+                  </div>
+
+                  {/* 50ステップ冒険ロードマップ */}
+                  <div className="card-large">
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: '900' }}>🗺️ 50ステップ宝島ロードマップ</h3>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--color-text-sub)' }}>現在のステップ: Step {activeProfile.step} / 50 (Level {activeProfile.level})</p>
+                    <div style={{ width: '100%', height: '14px', background: '#e2e8f0', borderRadius: '999px', marginTop: '10px', overflow: 'hidden' }}>
+                      <div style={{ width: `${(activeProfile.exp % 100)}%`, height: '100%', background: 'var(--primary)' }}></div>
+                    </div>
+                  </div>
+
+                  {/* 10. 公立中高一貫校・適性検査特訓 */}
+                  <div className="card-large card-hoverable" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#ffffff' }} onClick={() => startDrillCategory('aptitude')}>
+                    <span className="badge" style={{ background: '#f59e0b', color: '#0f172a' }}>岡山公立中高一貫校</span>
+                    <h3 style={{ fontSize: '1.5rem', marginTop: '8px', color: '#38bdf8' }}>🎓 適性検査 思考力・記述特訓</h3>
+                    <p style={{ fontSize: '0.95rem', color: '#cbd5e1', marginTop: '4px' }}>
+                      岡山県立操山中学校 ＆ 岡山県立大安寺中等教育学校の適性検査（資料読み取り・論理思考・文章記述）対策！
+                    </p>
+                    <button className="btn" style={{ background: '#38bdf8', color: '#0f172a', fontWeight: '900', marginTop: '16px' }}>
+                      思考力チャレンジを開始 ➔
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* 算数・筆算タブ */}
+              {appState.activeTab === 'math' && (
+                <div className="card-large" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h2 style={{ color: 'var(--primary)' }}>📐 算数・筆算ドリル</h2>
+                  <p>基礎計算から小4の筆算、応用文章題までマスターしよう！</p>
+                  <button className="btn btn-primary" onClick={() => startDrillCategory('math')}>算数ドリルをスタート！</button>
+                </div>
+              )}
+
+              {/* 漢字・国語タブ */}
+              {appState.activeTab === 'kanji' && (
+                <div className="card-large" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h2 style={{ color: 'var(--primary)' }}>✏️ 漢字・国語ドリル</h2>
+                  <p>学年ごとの読み・書き、同音異義語、語彙力を鍛えよう！</p>
+                  <button className="btn btn-primary" onClick={() => startDrillCategory('japanese')}>国語ドリルをスタート！</button>
+                </div>
+              )}
+
+              {/* 進捗・お財布タブ */}
+              {appState.activeTab === 'progress' && (
+                <div className="card-large" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h2>💰 {activeProfile.name} のお財布・貯金通帳</h2>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                    <div className="card-std" style={{ background: '#fef3c7', border: '1.5px solid #f59e0b' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>現在の貯金額</span>
+                      <p style={{ fontSize: '1.8rem', fontWeight: '900', color: '#b45309' }}>{activeProfile.wallet} 円</p>
+                    </div>
+                    <div className="card-std">
+                      <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>未使用お小遣いチケット</span>
+                      <p style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--primary)' }}>🎟️ {activeProfile.unusedTickets} 枚</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 志望校ガイドタブ */}
+              {appState.activeTab === 'guide' && (
+                <div className="card-large" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h2>📖 岡山市 公立中高一貫校 志望校ガイド</h2>
+                  <div className="card-std">
+                    <h3 style={{ color: 'var(--color-blue)' }}>🏫 岡山県立操山中学校</h3>
+                    <p style={{ fontSize: '0.95rem', marginTop: '6px' }}>豊かな自然と歴史ある操山の環境で、高い論理的思考力と表現力を養う伝統校です。</p>
+                  </div>
+                  <div className="card-std">
+                    <h3 style={{ color: 'var(--color-teal)' }}>🏫 岡山県立大安寺中等教育学校</h3>
+                    <p style={{ fontSize: '0.95rem', marginTop: '6px' }}>6年間の一貫教育でグローバルリーダーを育てる、国際理解と適性検査対策が充実した進学校です。</p>
+                  </div>
+                </div>
+              )}
+
+              {/* 保護者専用エリア */}
+              {appState.activeTab === 'parent' && (
+                <div className="card-large">
+                  <h2>🔒 保護者専用エリア</h2>
+                  {!parentUnlocked ? (
+                    <form onSubmit={handleUnlockParent} style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <label style={{ fontWeight: 'bold' }}>暗証番号を入力してください（初期: 0410）:</label>
+                      <input
+                        type="password"
+                        className="card-std"
+                        style={{ width: '200px', fontSize: '1.2rem', textAlign: 'center' }}
+                        value={parentPinInput}
+                        onChange={(e) => setParentPinInput(e.target.value)}
+                      />
+                      <button type="submit" className="btn btn-primary" style={{ width: '200px' }}>ロック解除</button>
+                    </form>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
+                      <div className="card-std">
+                        <h3>💬 子どもへの応援メッセージ変更</h3>
+                        <input
+                          type="text"
+                          className="card-std"
+                          style={{ width: '100%', marginTop: '8px' }}
+                          value={appState.parentMessage}
+                          onChange={(e) => setAppState(prev => ({ ...prev, parentMessage: e.target.value }))}
+                        />
+                      </div>
+                      <button className="btn btn-secondary" onClick={() => setParentUnlocked(false)}>保護者エリアを施錠</button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // ----------------------------------------------------
+    // アプリケーションレンダリング (ErrorBoundary 包摂)
+    // ----------------------------------------------------
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      <ErrorBoundary>
+        <OkayamaChujuApp />
+      </ErrorBoundary>
+    );
+  </script>
+</body>
+</html>
