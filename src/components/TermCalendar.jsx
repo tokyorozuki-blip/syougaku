@@ -34,7 +34,7 @@ export const TermCalendar = ({ termInfo, profile }) => {
       <div className="z-10 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-md border border-white text-right">
         <div className="text-xs text-slate-500 font-bold">現在の目標</div>
         <div className="text-sm font-extrabold text-pink-600">
-          {isMinato ? '🌸 ひらがな・基礎たしざんマスター' : '🎯 操山・大安寺適性検査 A判定突破'}
+          {isMinato ? '🌸 ひらがな・基礎たしざんマスター' : '🎯 県立中適性検査 A判定突破'}
         </div>
       </div>
     </div>

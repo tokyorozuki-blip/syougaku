@@ -8,7 +8,7 @@ export const TargetSchoolGuide = () => {
         <span className="bg-amber-400 text-amber-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
           岡山県立中高一貫校 受検対策ガイド
         </span>
-        <h2 className="text-3xl font-black mt-3">岡山県立操山中学校 ＆ 大安寺中等教育学校</h2>
+        <h2 className="text-3xl font-black mt-3">岡山県立中高一貫校 2校ガイド</h2>
         <p className="text-sm text-purple-200 mt-2 max-w-2xl">
           岡山県を代表する公立中高一貫校2校の学校生活、探究学習、学食名物、および最新の受検過去問情報を完全網羅！
         </p>
@@ -21,10 +21,10 @@ export const TargetSchoolGuide = () => {
         <div className="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-md space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-pink-100 rounded-2xl flex items-center justify-center text-2xl text-pink-600 font-black">
-              操
+              A
             </div>
             <div>
-              <h3 className="text-xl font-black text-slate-900">岡山県立操山中学校</h3>
+              <h3 className="text-xl font-black text-slate-900">県立A中学校</h3>
               <p className="text-xs text-slate-500 font-bold">併設型中高一貫校 / 岡山市中区</p>
             </div>
           </div>
@@ -67,10 +67,10 @@ export const TargetSchoolGuide = () => {
         <div className="bg-white rounded-3xl p-6 border-2 border-purple-100 shadow-md space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-2xl text-purple-700 font-black">
-              大
+              B
             </div>
             <div>
-              <h3 className="text-xl font-black text-slate-900">岡山県立大安寺中等教育学校</h3>
+              <h3 className="text-xl font-black text-slate-900">県立B中等教育学校</h3>
               <p className="text-xs text-slate-500 font-bold">中等教育学校 (6年完全一貫) / 岡山市北区</p>
             </div>
           </div>
@@ -87,7 +87,7 @@ export const TargetSchoolGuide = () => {
             </div>
 
             <div className="p-3 bg-slate-50 rounded-xl">
-              <div className="font-bold text-slate-900 mb-1">🍜 学食名物「大安寺特製ラーメン ＆ カレー」</div>
+              <div className="font-bold text-slate-900 mb-1">🍜 学食名物「特製ラーメン ＆ カレー」</div>
               <p>出汁の効いた特製ラーメンと本格辛口カレーは、午後の授業へのパワーの源。</p>
             </div>
 
@@ -104,7 +104,7 @@ export const TargetSchoolGuide = () => {
               rel="noreferrer"
               className="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs rounded-xl shadow transition text-center block"
             >
-              🔗 大安寺過去問 ＆ 公式受検ページへ
+              🔗 過去問 ＆ 公式受検ページへ
             </a>
           </div>
         </div>

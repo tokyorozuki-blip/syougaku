@@ -16,7 +16,7 @@ export const Header = ({ profile, setProfile, stats }) => {
               岡山中受ナビ
               <span className="text-xs bg-white/20 text-white px-2.5 py-0.5 rounded-full font-bold">Ver 2.5</span>
             </h1>
-            <p className="text-xs opacity-90">岡山県立操山中・大安寺中等受検 ＆ 全学年完全対応</p>
+            <p className="text-xs opacity-90">岡山県立中高一貫校受検 ＆ 全学年完全対応</p>
           </div>
         </div>
 

@@ -5,6 +5,9 @@ import { TermCalendar } from './components/TermCalendar';
 import { AdvanceCourseSelector } from './components/AdvanceCourseSelector';
 import { GradeSelector } from './components/GradeSelector';
 import { SubjectCards } from './components/SubjectCards';
+import { TopicSelector } from './components/TopicSelector';
+import { PreparationStudyView } from './components/PreparationStudyView';
+import { StepBreadcrumb } from './components/StepBreadcrumb';
 import { QuestionCard } from './components/QuestionCard';
 import { ExplanationModal } from './components/ExplanationModal';
 import { TargetSchoolGuide } from './components/TargetSchoolGuide';
@@ -26,9 +29,13 @@ export function App() {
   // Navigation Tab State: 'home', 'exercise', 'revenge', 'guide', 'stats'
   const [activeTab, setActiveTab] = useState('home');
 
+  // Multi-step Home Flow State: 'grade' | 'subject' | 'topic' | 'preview'
+  const [homeStep, setHomeStep] = useState('grade');
+
   // Filtering States
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [selectedGrade, setSelectedGrade] = useState('all');
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [selectedCourse, setSelectedCourse] = useState('normal');
 
@@ -89,6 +96,26 @@ export function App() {
   }, [selectedSubject, selectedGrade, selectedDifficulty, activeTab, revengeIds]);
 
   const currentQ = filteredQuestions[currentQuestionIndex] || filteredQuestions[0];
+
+  // Handlers for step flow
+  const handleSelectGrade = (g) => {
+    setSelectedGrade(g);
+    setHomeStep('subject');
+  };
+
+  const handleSelectSubject = (sub) => {
+    setSelectedSubject(sub);
+    setHomeStep('topic');
+  };
+
+  const handleSelectTopic = (topic) => {
+    setSelectedTopic(topic);
+    setHomeStep('preview');
+  };
+
+  const handleStartExercises = () => {
+    setActiveTab('exercise');
+  };
 
   // Option Choice Handler
   const handleOptionClick = (opt) => {
@@ -158,30 +185,80 @@ export function App() {
       <main className="max-w-6xl mx-auto px-4 py-6">
         <TermCalendar termInfo={termInfo} profile={profile} />
 
-        {/* HOME TAB */}
+        {/* HOME TAB WITH 5-STEP LEARNING FLOW */}
         {activeTab === 'home' && (
           <div className="space-y-6">
-            <AdvanceCourseSelector
-              selectedCourse={selectedCourse}
-              setSelectedCourse={setSelectedCourse}
-              onStartExercise={() => setActiveTab('exercise')}
-            />
-            <GradeSelector
+            <StepBreadcrumb
+              currentStep={homeStep}
+              onStepClick={(stepId) => {
+                if (stepId === 'exercise') setActiveTab('exercise');
+                else setHomeStep(stepId);
+              }}
               selectedGrade={selectedGrade}
-              setSelectedGrade={setSelectedGrade}
-              profile={profile}
-              onStartExercise={() => setActiveTab('exercise')}
+              selectedSubject={selectedSubject}
+              selectedTopic={selectedTopic}
             />
-            <SubjectCards
-              setSelectedSubject={setSelectedSubject}
-              onStartExercise={() => setActiveTab('exercise')}
-            />
+
+            {/* Step 1 & Step 2: Grade Selection and Subject Selection */}
+            {(homeStep === 'grade' || homeStep === 'subject') && (
+              <>
+                <AdvanceCourseSelector
+                  selectedCourse={selectedCourse}
+                  setSelectedCourse={setSelectedCourse}
+                  onStartExercise={() => setActiveTab('exercise')}
+                />
+                <GradeSelector
+                  selectedGrade={selectedGrade}
+                  setSelectedGrade={handleSelectGrade}
+                  profile={profile}
+                />
+                <SubjectCards
+                  selectedGrade={selectedGrade}
+                  setSelectedSubject={handleSelectSubject}
+                />
+              </>
+            )}
+
+            {/* Step 3: Topic Selector */}
+            {homeStep === 'topic' && (
+              <TopicSelector
+                selectedSubject={selectedSubject}
+                selectedGrade={selectedGrade}
+                onSelectTopic={handleSelectTopic}
+                onBackToSubject={() => setHomeStep('subject')}
+              />
+            )}
+
+            {/* Step 4: Preparation Study View (予習ノート) */}
+            {homeStep === 'preview' && selectedTopic && (
+              <PreparationStudyView
+                selectedTopic={selectedTopic}
+                selectedGrade={selectedGrade}
+                selectedSubject={selectedSubject}
+                onStartExercises={handleStartExercises}
+                onBackToTopics={() => setHomeStep('topic')}
+              />
+            )}
           </div>
         )}
 
         {/* EXERCISE / REVENGE TABS */}
         {(activeTab === 'exercise' || activeTab === 'revenge') && (
           <div className="max-w-3xl mx-auto space-y-6">
+            {/* Step Progress Breadcrumb */}
+            <StepBreadcrumb
+              currentStep="exercise"
+              onStepClick={(stepId) => {
+                if (stepId !== 'exercise') {
+                  setActiveTab('home');
+                  setHomeStep(stepId);
+                }
+              }}
+              selectedGrade={selectedGrade}
+              selectedSubject={selectedSubject}
+              selectedTopic={selectedTopic}
+            />
+
             {/* Question Filters */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2 flex-wrap">
@@ -190,7 +267,7 @@ export function App() {
                   onChange={(e) => setSelectedSubject(e.target.value)}
                   className="px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-xl text-xs font-bold"
                 >
-                  <option value="all">全教科 (2,500問)</option>
+                  <option value="all">全教科・全学年 (15,000問)</option>
                   <option value="math">📐 算数</option>
                   <option value="japanese">✏️ 国語</option>
                   <option value="science">🧪 理科</option>
