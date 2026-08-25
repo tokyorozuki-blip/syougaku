@@ -47,7 +47,7 @@ export const Header = ({ profile, setProfile, stats }) => {
               <i className="fa-solid fa-coins text-yellow-300"></i> {stats.coins} コイン
             </div>
             <div className="bg-amber-400 text-amber-950 px-3 py-1 rounded-xl text-xs font-extrabold flex items-center gap-1 shadow">
-              🎟️ {stats.tickets} 枚 ({stats.tickets * 50}円分)
+              🎟️ {stats.tickets} 枚 ({stats.tickets * 5}円分)
             </div>
           </div>
         </div>

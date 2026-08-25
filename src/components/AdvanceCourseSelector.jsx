@@ -18,7 +18,7 @@ export const AdvanceCourseSelector = ({ selectedCourse, setSelectedCourse, onSta
         >
           <div className="flex justify-between items-start mb-2">
             <span className="text-2xl">🌱</span>
-            <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-md">報酬: 1枚(50円)</span>
+            <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-md">報酬: 1枚(5円)</span>
           </div>
           <h4 className="font-extrabold text-slate-900">ちょっと先取り</h4>
           <p className="text-xs text-slate-500 mt-1">次の単員の基礎を予習する安心コース</p>
@@ -30,7 +30,7 @@ export const AdvanceCourseSelector = ({ selectedCourse, setSelectedCourse, onSta
         >
           <div className="flex justify-between items-start mb-2">
             <span className="text-2xl">🚀</span>
-            <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-md">報酬: 2枚(100円)</span>
+            <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-md">報酬: 2枚(10円)</span>
           </div>
           <h4 className="font-extrabold text-slate-900">先取りメイン</h4>
           <p className="text-xs text-slate-500 mt-1">1学年上のメイン単元に挑戦するスタンダード</p>
@@ -42,7 +42,7 @@ export const AdvanceCourseSelector = ({ selectedCourse, setSelectedCourse, onSta
         >
           <div className="flex justify-between items-start mb-2">
             <span className="text-2xl">🔥</span>
-            <span className="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-0.5 rounded-md">報酬: 4枚(200円)</span>
+            <span className="bg-purple-100 text-purple-700 text-xs font-bold px-2 py-0.5 rounded-md">報酬: 4枚(20円)</span>
           </div>
           <h4 className="font-extrabold text-slate-900">かなり先取り</h4>
           <p className="text-xs text-slate-500 mt-1">2学年上の飛び級・適性検査実戦特訓</p>

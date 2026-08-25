@@ -20,7 +20,7 @@ export function App() {
   // User Stats State
   const [stats, setStats] = useState(() => {
     const saved = localStorage.getItem(`chuju_stats_${profile}`);
-    return saved ? JSON.parse(saved) : { level: 1, xp: 0, coins: 50, tickets: 0, totalAnswered: 0, totalCorrect: 0 };
+    return saved ? JSON.parse(saved) : { level: 1, xp: 0, coins: 5, tickets: 0, totalAnswered: 0, totalCorrect: 0 };
   });
 
   // Navigation Tab State: 'home', 'exercise', 'revenge', 'guide', 'stats'
@@ -50,7 +50,7 @@ export function App() {
   useEffect(() => {
     localStorage.setItem('chuju_profile', profile);
     const saved = localStorage.getItem(`chuju_stats_${profile}`);
-    setStats(saved ? JSON.parse(saved) : { level: 1, xp: 0, coins: 50, tickets: 0, totalAnswered: 0, totalCorrect: 0 });
+    setStats(saved ? JSON.parse(saved) : { level: 1, xp: 0, coins: 5, tickets: 0, totalAnswered: 0, totalCorrect: 0 });
     const savedRevenge = localStorage.getItem(`chuju_revenge_${profile}`);
     setRevengeIds(savedRevenge ? JSON.parse(savedRevenge) : []);
   }, [profile]);
@@ -101,7 +101,7 @@ export function App() {
 
     if (correct) {
       playSFX('correct');
-      const coinEarned = selectedCourse === 'advance_3' ? 40 : selectedCourse === 'advance_2' ? 20 : 10;
+      const coinEarned = selectedCourse === 'advance_3' ? 4 : selectedCourse === 'advance_2' ? 2 : 1;
       const ticketEarned = selectedCourse === 'advance_3' ? 4 : selectedCourse === 'advance_2' ? 2 : selectedCourse === 'advance_1' ? 1 : 0;
       
       setStats(prev => {

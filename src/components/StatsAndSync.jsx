@@ -35,7 +35,7 @@ export const StatsAndSync = ({ profile, stats }) => {
           </div>
           <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200">
             <div className="text-xs text-amber-800 font-bold">お小遣い換算</div>
-            <div className="text-2xl font-black text-amber-600 mt-1">{stats.tickets * 50} 円</div>
+            <div className="text-2xl font-black text-amber-600 mt-1">{stats.tickets * 5} 円</div>
           </div>
         </div>
       </div>
