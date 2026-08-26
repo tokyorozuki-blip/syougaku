@@ -75,7 +75,17 @@ export function App() {
   // Realtime Academic Term
   const termInfo = useMemo(() => getSchoolTermInfo(), []);
 
-  // Filter Questions
+  // Helper: Shuffle questions randomly
+  const shuffleQuestions = (arr) => {
+    const result = [...arr];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  };
+
+  // Filter Questions with Topic Filter & Random Shuffle
   const filteredQuestions = useMemo(() => {
     let list = QUESTIONS_DB;
 
@@ -88,12 +98,29 @@ export function App() {
     if (selectedDifficulty !== 'all') {
       list = list.filter(q => q.difficulty === selectedDifficulty);
     }
+    if (selectedTopic) {
+      const topicId = typeof selectedTopic === 'object' ? selectedTopic.id : selectedTopic;
+      const topicList = list.filter(q => q.topicId === topicId);
+      if (topicList.length > 0) {
+        list = topicList;
+      }
+    }
     if (activeTab === 'revenge') {
       list = list.filter(q => revengeIds.includes(q.id));
     }
 
-    return list;
-  }, [selectedSubject, selectedGrade, selectedDifficulty, activeTab, revengeIds]);
+    return shuffleQuestions(list);
+  }, [selectedSubject, selectedGrade, selectedDifficulty, selectedTopic, activeTab, revengeIds]);
+
+  // Reset state when filters change
+  useEffect(() => {
+    setCurrentQuestionIndex(0);
+    setIsAnswered(false);
+    setSelectedOption(null);
+    setIsCorrect(null);
+    setShowHint(false);
+    setShowExplanationModal(false);
+  }, [selectedSubject, selectedGrade, selectedDifficulty, selectedTopic, activeTab]);
 
   const currentQ = filteredQuestions[currentQuestionIndex] || filteredQuestions[0];
 
@@ -263,11 +290,25 @@ export function App() {
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2 flex-wrap">
                 <select
+                  value={selectedGrade}
+                  onChange={(e) => setSelectedGrade(e.target.value)}
+                  className="px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-xl text-xs font-bold text-slate-700"
+                >
+                  <option value="all">全学年 (1〜6年)</option>
+                  <option value="1">🎒 小学1年生</option>
+                  <option value="2">🎒 小学2年生</option>
+                  <option value="3">🎒 小学3年生</option>
+                  <option value="4">🏫 小学4年生</option>
+                  <option value="5">🏫 小学5年生</option>
+                  <option value="6">🎓 小学6年生</option>
+                </select>
+
+                <select
                   value={selectedSubject}
                   onChange={(e) => setSelectedSubject(e.target.value)}
                   className="px-3 py-1.5 bg-slate-100 border border-slate-300 rounded-xl text-xs font-bold"
                 >
-                  <option value="all">全教科・全学年 (15,000問)</option>
+                  <option value="all">全教科</option>
                   <option value="math">📐 算数</option>
                   <option value="japanese">✏️ 国語</option>
                   <option value="science">🧪 理科</option>
